@@ -1,0 +1,88 @@
+.stApp{
+	background-color: #f9f9f9
+}
+
+/* style.css */
+.container {
+    width: 100%;
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 20px;
+    background-color: #efeded;
+    border-radius: 10px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.logo-container{
+	display: flex;
+	justify-content: left;
+	align-items: left;
+	margin-bottom: 20px;
+}
+
+.logo-container img {
+	width: 300px;
+}
+
+.chat-history {
+    max-height: 400px;
+    overflow-y: auto;
+    margin-bottom: 20px;
+    padding: 10px;
+    background-color: #253e33;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+
+div.stTab {
+    background-color: #f1f1f1;
+    padding: 10px;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+div.stTabSelected {
+    background-color: #4caf50;
+    color: white;
+    border-radius: 8px;
+}
+
+div.stTabsHeader {
+    padding-bottom: 20px;
+    margin-bottom: 10px;
+}
+
+div.stTab > div {
+    font-weight: bold;
+    color: #333;
+}
+
+/* Customize the active tab style */
+div.stTabSelected {
+    font-weight: bold;
+    color: white;
+}
+
+.stTabs .stTab:hover {
+    cursor: pointer;
+    background-color: #ddd;
+    border-radius: 8px;
+}
+
+.user-message {
+    background-color: #d1f7ff;
+    padding: 10px;
+    border-radius: 8px;
+    margin: 10px 0;
+}
+
+.bot-message {
+    background-color: #e0e0e0;
+    padding: 10px;
+    border-radius: 8px;
+    margin: 10px 0;
+}
+
+
+
