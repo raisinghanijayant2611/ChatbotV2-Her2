@@ -1,0 +1,12 @@
+openai
+streamlit
+langchain
+langchain_huggingface
+faiss-cpu
+tiktoken
+pypdf
+langchain_community
+transformers
+ctransformers
+datasets
+pypdfium2
