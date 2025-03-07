@@ -23,13 +23,11 @@ Please use streamlit to run the chatbot:
 ![image](https://github.com/user-attachments/assets/7a54b265-1f53-480f-a50d-e1249911d5f3)
 
 
+The model is ContactDoctor/Bio-Medical-LLama-3-2-1B-CoT 
 
+It gave the best performance across different metrics of accuracy, bleu score, model loss
 
-
-
-
-
-
+Fine-tuning was done using Peft QLora. Link to the colab notebook ![link](https://colab.research.google.com/drive/1g10xCCYbDjQz2e0j19BQMCmfgNbstSAq#scrollTo=hA_DnlE97gXW)
 
 
 
