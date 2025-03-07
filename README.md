@@ -23,7 +23,7 @@ Please use streamlit to run the chatbot:
 ![image](https://github.com/user-attachments/assets/7a54b265-1f53-480f-a50d-e1249911d5f3)
 
 
-The model is ContactDoctor/Bio-Medical-LLama-3-2-1B-CoT 
+The model is fine-tuned version of ContactDoctor/Bio-Medical-LLama-3-2-1B-CoT 
 
 It gave the best performance across different metrics of accuracy, bleu score, model loss
 
