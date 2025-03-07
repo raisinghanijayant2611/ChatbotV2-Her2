@@ -1,0 +1,30 @@
+Query,Response,Feedback
+summarize the article,"
+The article discusses picornaviruses, a type of virus that can cause various diseases in humans and animals. The paper specifically focuses on four different strains of picornaviruses and their effects on the body. The study found that one strain can cause fatal encephalitis, another can cause diabetes, and a third can cause chronic demyelinating disease. The virus particles have a spherical shape and are made up of RNA and coat proteins. The coat proteins have a symmetrical structure with 60 subunits, and changes in these proteins can alter the surface features of the virus. These changes can also affect the role of minor capsid peptides, which are important for the virus's ability to infect cells. The study provides valuable insights into the structure and function of picornaviruses, which can aid in the development of treatments and preventive measures against these viruses.",1
+what is the title?,"
+The title of the paper is ""Evidence for a Role of HER-2/neu Amplification in Human Breast Cancer.""",1
+what is HER2 gene?,"
+The HER2 gene, also known as HER-2/neu, is a member of the tyrosine kinase family of genes. It is located on band q21 of chromosome 17 and is closely related to the EGFR gene, which is located on band pll.-p13 of chromosome 7. The HER2 gene encodes a protein of 185,000 daltons, and produces a messenger RNA (mRNA) of 4.8 kb. This differs from the 170,000-dalton protein and 5.8- and 10-kb transcripts produced by the EGFR gene. However, despite these differences, the HER2 gene is more closely related to the EGFR gene than other members of the tyrosine kinase family based on sequence data. Both the HER2 and EGFR proteins have an extracellular domain and a transmembrane domain with two cysteine-rich regions. ",1
+what is efgr,"
+The EGF receptor (EGFR) is a protein encoded by the c-erbB proto-oncogene. This gene is highly homologous to the transforming gene of the avian erythroblastosis virus and is part of the tyrosine-specific protein kinase family, which includes many other proto-oncogenes. EGFR is involved in cell growth and division, and its expression during embryonic development has been linked to its role in cancer development. The close relationship between EGFR and the transforming genes of other viruses, such as the simian sarcoma virus and feline sarcoma virus, provides direct evidence of its role in promoting cell growth and transformation. ",1
+what is the title,"
+        The title of the research paper is ""Amplification of the HER-2/neu oncogene in human breast cancer and its association with nodal status and disease recurrence.""",1
+what is the title of the article?,"
+The title of the article is ""Amplification of the HER-2/neu Gene: A Predictive Factor for Disease Behavior and Survival in Breast Cancer.""",1
+summarize the article please,"Here is a summary of the article:
+
+**Age at Diagnosis**: Patients diagnosed with breast cancer at ages <50 and >50 have distinct survival and recurrence patterns.
+
+**Tumor Size and Node Status**: Smaller tumor size (<2 cm) and the presence of more lymph nodes (>20) tend to correlate with a higher recurrence rate and poorer survival.
+
+**HER-2/Neu Amplification**: Amplification of the HER-2/neu gene is associated with a higher recurrence rate and poorer survival in node-positive patients.
+
+**Number of Lymph Nodes**: The number of positive lymph nodes (1-3, 3, and >3) also correlates with a higher recurrence rate and poorer survival.
+
+**HER-2/Neu Status**: Patients with HER-2/neu amplification (ER+ and PgR-) tend to have a higher recurrence rate and poorer survival compared to those without amplification.
+
+**Age at Diagnosis and Survival**: For node-positive patients, age at diagnosis (<50) tends to correlate with better survival, while >50 years tends to have poorer survival.
+
+**Number of Positive Lymph Nodes**: The number of positive lymph nodes (0-3, 3, and >3) correlates with a higher recurrence rate and poorer survival.
+
+**",1
