@@ -1,17 +1,11 @@
 import logging
 import pathlib
 from langchain_core.documents import Document
-from langchain_community.vectorstores.docarray import DocArrayInMemorySearch
 from langchain_community.embeddings.huggingface import HuggingFaceEmbeddings
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 from langchain_core.retrievers import BaseRetriever
 from langchain.retrievers.document_compressors import EmbeddingsFilter
 from langchain.retrievers import ContextualCompressionRetriever
-from langchain.document_loaders import (
-  PyPDFLoader, TextLoader,
-  UnstructuredWordDocumentLoader,
-  UnstructuredEPubLoader
-)
 from langchain_community.vectorstores import docarray
 from langchain.vectorstores.faiss import FAISS
 from langchain.chains.conversational_retrieval.base import ConversationalRetrievalChain
@@ -20,7 +14,7 @@ from langchain.memory import ConversationBufferMemory
 import streamlit as st
 from streamlit.external.langchain import StreamlitCallbackHandler
 from ctransformers import AutoModelForCausalLM
-from langchain.llms import CTransformers
+#from langchain.llms import CTransformers
 from langchain.prompts import PromptTemplate
 from langchain.chains.question_answering import load_qa_chain
 from transformers import LlamaForCausalLM, LlamaTokenizer
@@ -34,12 +28,11 @@ from transformers import AutoModelForCausalLM, AutoTokenizer
 import torch
 from transformers import AutoModelForCausalLM, AutoTokenizer, pipeline
 from langchain.llms import HuggingFacePipeline
+import csv
 
-
-
+#####Placeh holder function to provide functionality for the user to upload more documents (not implemented yet)
 def load_document(temp_filepath: str) -> list[Document]:
     """In case the file is not present, load a file and return it as a list of documents."""
-    temp_filepath_chck = os.listdir(temp_filepath)[0]
     pdf = pdfium.PdfDocument(temp_filepath)
     n_pages = len(pdf)
     langchain_docs = []
@@ -61,7 +54,7 @@ def load_document(temp_filepath: str) -> list[Document]:
 
 def configure_retriever(docs: list[Document], use_compression: bool = True) -> BaseRetriever:
     """Retriever to use."""
-    text_splitter = RecursiveCharacterTextSplitter(chunk_size=1500, chunk_overlap=200)
+    text_splitter = RecursiveCharacterTextSplitter(chunk_size=500, chunk_overlap=40)
     splits = text_splitter.split_documents(docs)
     embeddings = HuggingFaceEmbeddings(model_name="all-MiniLM-L6-v2")
     vectordb = FAISS.from_documents(splits, embeddings)
@@ -104,43 +97,44 @@ def configure_chain(retriever: BaseRetriever) -> Chain:
     """Configure chain with a retriever."""
 
     
-    # Model name
+    # Model name , fine tune from model: https://huggingface.co/ContactDoctor/Bio-Medical-Llama-3-2-1B-CoT-012025/tree/main
     model_name = "raisinghanijayant/doctor-her2-chat-finetune"
 
     # Load model & tokenizer
     tokenizer = AutoTokenizer.from_pretrained(model_name)
-    model = AutoModelForCausalLM.from_pretrained(model_name, torch_dtype=torch.float16, device_map="auto")
 
     gpu_chck = 0
+    device_map = "cpu"
     if torch.cuda.is_available():
         gpu_id = 0  # Change if multiple GPUs
         total_memory = torch.cuda.get_device_properties(gpu_id).total_memory
         total_memory = total_memory/1000000000.0
-        if total_memory > 8:
+        if total_memory > 15:
             gpu_chck = 1
+    
     if gpu_chck ==1:
         device = torch.device("cuda")
-        model.to(device)
+        device_map = "auto"
+        
+    else:
+        device = torch.device("cpu")
+    
 
-    # Function to generate responses
-    def generate_text(prompt):
-        inputs = tokenizer(prompt, return_tensors="pt").to(device)  # Move input to GPU
-        output = model.generate(**inputs, max_length=512)
-        return tokenizer.decode(output[0], skip_special_tokens=True)
+    model = AutoModelForCausalLM.from_pretrained(model_name, torch_dtype=torch.float16, device_map=device_map)
+    model.to(device)
+
     
     # Wrap model in Hugging Face pipeline
-    pipe = pipeline("text-generation", model=model, tokenizer=tokenizer, max_new_tokens=256)
+    pipe = pipeline("text-generation", model=model, tokenizer=tokenizer, temperature=0.7, max_new_tokens = 100)
 
     # Store conversation history
-    memory = ConversationBufferMemory(memory_key="chat_history", return_messages=True)
+    memory = ConversationBufferMemory(memory_key="chat_history", return_messages=True, k = 1, ai_prefix = "" )
     
 
     # Use HuggingFacePipeline as LLM in LangChain
     llm = HuggingFacePipeline(pipeline=pipe)
 
 
-    
-    
 
     return ConversationalRetrievalChain.from_llm(
         llm=llm,
@@ -158,7 +152,8 @@ def load_css():
 def chatbot_ui(qa_chain):
     load_css()
     st.image("images/logo2.png")
-    st.title('LANGCHAIN DEMO')
+    st.subheader('HUMAN BREST CANCER PUBLICATION CHATBOT')
+    st.write("[Click here to visit Publication](https://www.researchgate.net/profile/Gary-Clark/publication/19364043_Slamon_DJ_Clark_GM_Wong_SG_Levin_WJ_Ullrich_A_McGuire_WLHuman_breast_cancer_correlation_of_relapse_and_survival_with_amplification_of_the_HER-2neu_oncogene_Science_Wash_DC_235_177-182/links/0046352b85f241a532000000/Slamon-DJ-Clark-GM-Wong-SG-Levin-WJ-Ullrich-A-McGuire-WLHuman-breast-cancer-correlation-of-relapse-and-survival-with-amplification-of-the-HER-2-neu-oncogene-Science-Wash-DC-235-177-182.pdf)")
 
     # Initialize session state variables
     if "chat_history" not in st.session_state:
@@ -174,17 +169,23 @@ def chatbot_ui(qa_chain):
 
     # Preserve chat input across interactions
     user_query = st.chat_input(placeholder="Ask me anything!")
+    file_path_pos = "data/feedback_pos.csv"  
+    file_path_neg = "data/feedback_neg.csv" 
 
     if user_query:
         st.session_state.user_query = user_query  # ✅ Store query in session state
         
         start_time = time.time()
         stream_handler = StreamlitCallbackHandler(st.chat_message("assistant"))
-        response_dict = qa_chain.invoke({"question": user_query})
+        response_dict = qa_chain.invoke({"question": user_query}, {"callbacks": [stream_handler]})
         response_time = time.time() - start_time
         #print(response["answer"])
-        response = response["answer"].split("Helpful Answer:")[-1].strip()
-        st.session_state.user_response = response
+        response = response_dict["answer"].split("Helpful Answer:")[-1].strip()
+        st.markdown(response)
+        if len(response) == 0:
+            st.session_state.user_response = "No Response"
+        else:
+            st.session_state.user_response = response
 
         # Store chat history
         st.session_state.chat_history.append((user_query, response))
@@ -203,20 +204,31 @@ def chatbot_ui(qa_chain):
         feedback_key = len(st.session_state.chat_history) - 1
         if feedback_key not in st.session_state.feedback:
             st.session_state.feedback[feedback_key] = None  # Ensure key exists
-
         # ✅ Buttons inside user_query but no reset
         if st.session_state.user_query != "" :
+            st.write("was this answer helpful?")
             col1, col2 = st.columns(2)
             with col1:
                 if st.button(f"👍 Yes", key=f"yes_{feedback_key}"):
                     st.session_state.feedback[feedback_key] = 1
-                    st.session_state.metrics["satisfaction"].append(1000)
+                    st.session_state.metrics["satisfaction"].append(1)
+                    # List of texts to add as a new row
+                    new_row = [str(st.session_state.user_query), str(st.session_state.user_response), "1"]
+                    # Open the CSV file in append mode and add the new row
+                    with open(file_path_pos, "a", newline="", encoding="utf-8") as file:
+                        writer = csv.writer(file)
+                        writer.writerow(new_row)
                     st.session_state.user_query = ""
                     st.rerun()
             with col2:
                 if st.button(f"👎 No", key=f"no_{feedback_key}"):
                     st.session_state.feedback[feedback_key] = 0
                     st.session_state.metrics["satisfaction"].append(0)
+                    new_row = [str(st.session_state.user_query), str(st.session_state.user_response), "0"]
+                    # Open the CSV file in append mode and add the new row
+                    with open(file_path_neg, "a", newline="", encoding="utf-8") as file:
+                        writer = csv.writer(file)
+                        writer.writerow(new_row)
                     st.session_state.user_query =""
                     st.rerun()
 
@@ -239,8 +251,7 @@ def metrics_ui():
     st.title("Chatbot Metrics")
     if "metrics" in st.session_state:
         avg_response_time = sum(st.session_state.metrics["response_times"]) / max(len(st.session_state.metrics["response_times"]), 1)
-        avg_satisfaction = sum(st.session_state.metrics["satisfaction"]) 
-        #/ max(len(st.session_state.metrics["satisfaction"]), 1) * 100 
+        avg_satisfaction = sum(st.session_state.metrics["satisfaction"])/max(len(st.session_state.metrics["satisfaction"]),1)
         
         st.write(f"📊 **Average Response Time:** {avg_response_time:.2f} seconds")
         st.write(f"😊 **User Satisfaction:** {avg_satisfaction:.2f}%")
